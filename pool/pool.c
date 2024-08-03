@@ -1,5 +1,5 @@
 #include "pool.h"
-#include <strings.h>
+#include <strings.h> /*TODO: reimplement bzero and remove this dependency*/
 
 #define offsetnode(a, x) (node*)((uint8_t*)a + x)
 
@@ -149,11 +149,5 @@ bool pool_empty(pool* p) {
   if (total < p->size) {
     return false;
   }
-
-  if (p->size < total) {
-    printf("seeing this error means there's something is wrong in this library");
-    abort();
-  }
-  
   return true;
 }

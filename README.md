@@ -12,13 +12,6 @@ and set up another allocator in that region, be it a stack/pool/free-list/etc al
  - Simple: no allocation algorithm shall possess enough complexity to bite us in the foot;
  - Tested: all allocators shall be throughly tested, nobody wants do debug memory bugs.
 
-These allocators are going to be available:
- - Arena allocator
- - Constant-size stack allocator
- - Variable-size stack allocator
- - Pool allocator
- - Free-list allocator (first-fit, best-fit)
- - Global configurable allocator
 
 ## Why?
 

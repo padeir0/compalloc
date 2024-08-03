@@ -1,5 +1,7 @@
 #include "pool.h"
 #include <strings.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define BUFFSIZE 8192
 uint8_t buffer[BUFFSIZE];

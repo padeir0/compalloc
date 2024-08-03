@@ -1,0 +1,8 @@
+#!/bin/bash
+
+gcc -Wall -W -Werror -ansi --pedantic -c "$1/$1.c" -o "$1.o"
+gcc -Wall -W -Werror -ansi --pedantic -c "$1/test.c" -o test.o
+gcc "$1.o" test.o -o test_$1
+rm *.o
+./test_$1
+rm test_$1

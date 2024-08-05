@@ -1,9 +1,9 @@
 #include "pool.h"
 #include <strings.h> /*TODO: reimplement bzero and remove this dependency*/
 
-#define offsetnode(a, x) (node*)((uint8_t*)a + x)
+#define offsetnode(a, x) (pool_node*)((uint8_t*)a + x)
 
-int32_t distance(uint8_t* a, uint8_t* b) {
+size_t distance(uint8_t* a, uint8_t* b) {
   if (a > b) {
     return a-b;
   } else {
@@ -11,30 +11,30 @@ int32_t distance(uint8_t* a, uint8_t* b) {
   }
 }
 
-char* str_res(enum RES r) {
+char* str_res(enum pool_RES r) {
   switch (r) {
-    case OK:
+    case pool_OK:
       return "OK";
-    case ERR_BOUNDS:
+    case pool_ERR_BOUNDS:
       return "Pointer is out of bounds";
-    case ERR_ALIGN:
+    case pool_ERR_ALIGN:
       return "Pointer is out of alignment";
-    case ERR_CHUNK_SIZE:
+    case pool_ERR_CHUNK_SIZE:
       return "Provided chunk size is too small";
-    case ERR_SMALL_BUFF:
+    case pool_ERR_SMALL_BUFF:
       return "Provided buffer is too small";
-    case ERR_NULL_BUFF:
+    case pool_ERR_NULL_BUFF:
       return "Buffer is NULL";
   }
   return "??";
 }
 
 void set_list(pool* p) {
-  node* curr = (node*)p->begin;
+  pool_node* curr = (pool_node*)p->begin;
   /* we need this because of alignment, the chunks may not align
    * and leave a padding at the end of the buffer
    */
-  node* end = offsetnode(p->end, -p->chunksize);
+  pool_node* end = offsetnode(p->end, -p->chunksize);
 
   p->head = curr;
   while (curr < end) {
@@ -55,23 +55,23 @@ void set_list(pool* p) {
   p->tail = curr;
 }
 
-const size_t min_chunk_size = sizeof(node);
+const size_t min_chunk_size = sizeof(pool_node);
 
-pool* pool_create(uint8_t* buff, size_t buffsize, size_t chunksize, enum RES* out) {
+pool* pool_create(uint8_t* buff, size_t buffsize, size_t chunksize, enum pool_RES* out) {
   pool* p;
 
   if (buff == NULL) {
-    *out = ERR_NULL_BUFF;
+    *out = pool_ERR_NULL_BUFF;
     return NULL;
   }
 
   if (chunksize < min_chunk_size) {
-    *out = ERR_CHUNK_SIZE;
+    *out = pool_ERR_CHUNK_SIZE;
     return NULL;
   }
 
   if (buffsize < sizeof(pool) + chunksize) {
-    *out = ERR_SMALL_BUFF;
+    *out = pool_ERR_SMALL_BUFF;
     return NULL;
   }
 
@@ -101,29 +101,29 @@ void* pool_alloc(pool* p) {
   return curr;
 }
 
-enum RES pool_free(pool* p, void* ptr) {
-  node* new;
+enum pool_RES pool_free(pool* p, void* ptr) {
+  pool_node* new;
 
   if (!(p->begin <= (uint8_t*)ptr && (uint8_t*)ptr < p->end)) {
-    return ERR_BOUNDS;
+    return pool_ERR_BOUNDS;
   }
 
   if (distance(ptr, p->begin) % p->chunksize != 0) {
-    return ERR_ALIGN;
+    return pool_ERR_ALIGN;
   }
 
-  new = (node*)ptr;
+  new = (pool_node*)ptr;
   new->next = NULL;
 
   if (p->head == NULL) {
     p->head = new;
     p->tail = new;
-    return OK;
+    return pool_OK;
   }
 
   p->tail->next = new;
   p->tail = new;
-  return OK;
+  return pool_OK;
 }
 
 void pool_free_all(pool* p) {
@@ -132,7 +132,7 @@ void pool_free_all(pool* p) {
 
 size_t pool_available(pool* p) {
   size_t total = 0;
-  node* curr = p->head;
+  pool_node* curr = p->head;
   while (curr != NULL) {
     total += p->chunksize;
     curr = curr->next;

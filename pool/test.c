@@ -9,8 +9,8 @@ uint8_t buffer[BUFFSIZE];
 #define OBJSSIZE 100
 uint8_t* objs[OBJSSIZE];
 
-void checkres(enum RES r) {
-  if (r != OK) {
+void checkres(enum pool_RES r) {
+  if (r != pool_OK) {
     printf("ERROR: %s\n", str_res(r));
     abort();
   }
@@ -36,7 +36,7 @@ bool checkbuff(uint8_t* obj, size_t size, uint8_t value) {
 }
 
 void test_seq(size_t objsize) {
-  enum RES res;
+  enum pool_RES res;
   pool* p = pool_create(buffer, BUFFSIZE, objsize, &res);
   uint8_t* obj;
   uint8_t i;
@@ -67,7 +67,7 @@ void test_seq(size_t objsize) {
   i = 0;
   while (i < OBJSSIZE) {
     res = pool_free(p, objs[i]);
-    if (res != OK) {
+    if (res != pool_OK) {
       printf("ERROR: %s\n", str_res(res));
       abort();
     }
@@ -113,7 +113,7 @@ int placeobj(uint8_t* obj) {
 
 void _alloc(pool* p, size_t objsize) {
   uint8_t* obj;
-  enum RES res;
+  enum pool_RES res;
   int i;
   obj = (uint8_t*) pool_alloc(p);
   if (obj == NULL) {
@@ -134,7 +134,7 @@ void _alloc(pool* p, size_t objsize) {
 void _free(pool* p, size_t objsize) {
   int i = findnonnull();
   uint8_t* obj;
-  enum RES res;
+  enum pool_RES res;
   if (i < 0) {
     return;
   }
@@ -150,7 +150,7 @@ void _free(pool* p, size_t objsize) {
 }
 
 void test_mixed(size_t objsize) {
-  enum RES res;
+  enum pool_RES res;
   pool* p = pool_create(buffer, BUFFSIZE, objsize, &res);
   int i;
   bzero(objs, sizeof(objs));
@@ -171,7 +171,7 @@ void test_mixed(size_t objsize) {
   while (i < OBJSSIZE) {
     if (objs[i] != NULL){
       res = pool_free(p, objs[i]);
-      if (res != OK) {
+      if (res != pool_OK) {
         printf("ERROR: %s\n", str_res(res));
         abort();
       }

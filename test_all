@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for dir in arena pool freelist
+do
+	./test $dir
+done

@@ -35,32 +35,32 @@ arena* arena_create(uint8_t* buffer, size_t size, enum arena_RES* res) {
   out = (arena*)buffer;
   out->buffer = buffer + sizeof(arena);
   out->buffsize = size - sizeof(arena);
-  out->head = out->buffer;
+  out->allocated = 0;
 
   return out;
 }
 
 void* arena_alloc(arena* a, size_t size) {
-  void* out = (void*)a->head;
-  if (distance(a->buffer, a->head + size) >= a->buffsize) {
+  void* out = (void*)(a->buffer + a->allocated);
+  if (a->allocated+size >= a->buffsize) {
     return NULL;
   }
-  a->head += size;
+  a->allocated += size;
   return out;
 }
 
 void arena_free_all(arena* a) {
-  a->head = a->buffer;
+  a->allocated = 0;
 }
 
 size_t arena_available(arena* a) {
-  return a->buffsize - distance(a->buffer, a->head);
+  return a->buffsize - a->allocated;
 }
 
 size_t arena_used(arena* a) {
-  return distance(a->buffer, a->head);
+  return a->allocated;
 }
 
 bool arena_empty(arena* a) {
-  return a->buffer == a->head;
+  return a->allocated == 0;
 }

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for dir in arena pool freelist
+for dir in arena pool freelist stack_v stack_f
 do
 	./test $dir
 done

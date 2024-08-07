@@ -13,7 +13,7 @@ char* arena_str_res(enum arena_RES res);
 typedef struct {
   uint8_t* buffer;
   size_t   buffsize;
-  uint8_t* head;
+  size_t   allocated;
 } arena;
 
 /* returns a arena allocated at the beginning of the buffer */
